@@ -1,0 +1,40 @@
+## Interface: 11200
+## Title: DR Vanilla
+## SavedVariablesPerCharacter: dark_addon_storage
+
+system\support\init.lua
+system\support\compat.lua
+system\support\events.lua
+system\support\logger.lua
+system\support\storage.lua
+system\support\commands.lua
+system\support\data\icons.lua
+
+system\interface\interface.lua
+system\interface\buttons.lua
+
+system\environment\environment.lua
+system\environment\logical.lua
+system\environment\virtual.lua
+system\environment\cast.lua
+system\environment\modifiers.lua
+system\environment\buff.lua
+system\environment\debuff.lua
+system\environment\health.lua
+#system\environment\runes.lua
+#system\environment\powertype.lua
+#system\environment\power.lua
+system\environment\spell.lua
+system\environment\group.lua
+system\environment\enemies.lua
+system\environment\unit.lua
+
+system\rotation\rotation.lua
+system\rotation\timer.lua
+
+
+rotations\druid\feral.lua
+
+system\support\ready.lua
+
+dr_vanilla.xml

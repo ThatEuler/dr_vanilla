@@ -1,0 +1,67 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <Frame name="container_frame" parent="UIParent">
+        <Size x="196" y="56"/>
+        <Anchors>
+            <Anchor point="TOP" relativePoint="TOP" relativeTo="UIParent"/>
+        </Anchors>
+        <Layers>
+            <Layer name="container_frame_background" level="BACKGROUND">
+                <Texture setAllPoints="true"><Color r="0.0" g="0.0" b="1.0" a="0.5"/></Texture>
+            </Layer>
+            <Layer name="container_frame_tooltip" level="TOOLTIP">
+                <Texture setAllPoints="true">
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="container_frame_status">
+                <Size>
+                    <AbsDimension x="196" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <FontString name="dr_status" inherits="GameFontNormalSmall" text="Welcome..." justifyH="LEFT">
+                            <Size>
+                                <AbsDimension x="128" y="18"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="TOPLEFT"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Button>
+            <CheckButton name="master_toggle" inherits="ActionButtonTemplate">
+                <Anchors><Anchor point="BOTTOMLEFT"></Anchor></Anchors>
+                <Layers><Layer level="ARTWORK"><FontString name="master_toggle_text" inherits="GameFontNormalSmall" text="Off"><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors></FontString></Layer></Layers>
+                <Scripts><OnClick>dark_addon.interface.set_master(this:GetChecked())</OnClick></Scripts>
+            </CheckButton>
+            <CheckButton name="cooldowns" inherits="ActionButtonTemplate">
+                <Anchors><Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="master_toggle"><Offset><AbsDimension x="4" y="0"/></Offset></Anchor></Anchors>
+                <Layers><Layer level="ARTWORK"><FontString name="cooldowns_text" inherits="GameFontNormalSmall" text="CD"><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors></FontString></Layer></Layers>
+            </CheckButton>
+            <CheckButton name="interrupts" inherits="ActionButtonTemplate">
+                <Anchors><Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="cooldowns"><Offset><AbsDimension x="4" y="0"/></Offset></Anchor></Anchors>
+                <Layers><Layer level="ARTWORK"><FontString name="interrupts_text" inherits="GameFontNormalSmall" text="Int"><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors></FontString></Layer></Layers>
+            </CheckButton>
+            <CheckButton name="multitarget" inherits="ActionButtonTemplate">
+                <Anchors><Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="interrupts"><Offset><AbsDimension x="4" y="0"/></Offset></Anchor></Anchors>
+                <Layers><Layer level="ARTWORK"><FontString name="multitarget_text" inherits="GameFontNormalSmall" text="MT"><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors></FontString></Layer></Layers>
+            </CheckButton>
+            <CheckButton name="settings" inherits="ActionButtonTemplate">
+                <Anchors><Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="multitarget"><Offset><AbsDimension x="4" y="0"/></Offset></Anchor></Anchors>
+                <Layers><Layer level="ARTWORK"><FontString name="settings_text" inherits="GameFontNormalSmall" text="CFG"><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors></FontString></Layer></Layers>
+            </CheckButton>
+        </Frames>
+        <Scripts>
+            <OnUpdate>dark_addon.OnUpdate(arg1)</OnUpdate>
+        </Scripts>
+    </Frame>
+
+</Ui>
