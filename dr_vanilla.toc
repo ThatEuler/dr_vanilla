@@ -2,6 +2,8 @@
 ## Title: DR Vanilla
 ## SavedVariablesPerCharacter: dark_addon_storage
 
+libs\LibDraw-1.0\LibDraw.lua
+
 system\support\init.lua
 system\support\compat.lua
 system\support\events.lua
@@ -28,10 +30,11 @@ system\environment\spell.lua
 system\environment\group.lua
 system\environment\enemies.lua
 system\environment\unit.lua
+system\environment\sequence.lua
 
 system\rotation\rotation.lua
 system\rotation\timer.lua
-
+system\interface\draw.lua
 
 rotations\druid\feral.lua
 

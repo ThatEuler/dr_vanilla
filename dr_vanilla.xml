@@ -34,6 +34,14 @@
                                 <Anchor point="TOPLEFT"/>
                             </Anchors>
                         </FontString>
+                        <FontString name="dr_status_extra" inherits="GameFontNormalSmall" text="" justifyH="RIGHT">
+                            <Size>
+                                <AbsDimension x="128" y="18"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="TOPRIGHT"/>
+                            </Anchors>
+                        </FontString>
                     </Layer>
                 </Layers>
             </Button>

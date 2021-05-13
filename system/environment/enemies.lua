@@ -3,62 +3,70 @@ local enemies = {}
 local enemies_cache = {}
 
 local function enemies_count(func)
-  local count = 0
-  for _, unit in pairs(enemies_cache) do
-    if func(unit) then
-      count = count + 1
+    local count = 0
+    for _, unit in pairs(enemies_cache) do
+        if func(unit) then
+            count = count + 1
+        end
     end
-  end
-  return count
+    return count
 end
 
 function enemies:count(func)
-  return enemies_count
+    return enemies_count
 end
 
 local function enemies_match(func)
-  for _, unit in pairs(enemies_cache) do
-    if func(unit) then 
-      return unit
+    for _, unit in pairs(enemies_cache) do
+        if func(unit) then
+            return unit
+        end
     end
-  end
-  return false
+    return false
 end
 
 function enemies:match(func)
-  return enemies_match
+    return enemies_match
 end
 
 local function enemies_around(distance)
-  return enemies_count(function (unit)
-    return unit.alive 
-      and (
-        (distance and unit.distance <= distance)
-        or not distance
-      )
-  end)
+    return enemies_count(function (unit)
+        return unit.alive
+        and (
+            (distance and unit.distance <= distance)
+            or not distance
+        )
+    end)
 end
 
 function enemies:around(distance)
-  return enemies_around
+    return enemies_around
 end
 
 function dark_addon.environment.conditions.enemies()
-  return setmetatable({ }, {
-    __index = function(t, k)
-      return enemies[k](t)
-    end
-  })
+    return setmetatable({ }, {
+        __index = function(t, k)
+            return enemies[k](t)
+        end
+    })
 end
 
 local function add_enemy(unitID)
-  if not enemies_cache[unitID] and not UnitIsFriend("player", unitID) then
-    enemies_cache[unitID] = dark_addon.environment.conditions.unit(unitID)
-  end
+    if not enemies_cache[unitID] and UnitIsEnemy("player", unitID) then
+        enemies_cache[unitID] = dark_addon.environment.conditions.unit(unitID)
+    end
 end
 
 local function remove_enemy(unitID)
-  if enemies_cache[unitID] then
-    enemies_cache[unitID] = nil
-  end
+    if enemies_cache[unitID] then
+        enemies_cache[unitID] = nil
+    end
 end
+
+C_Timer.NewTicker(0.5, function()
+    local guids = GetObjects()
+    enemies_cache = {}
+    for _, guid in guids do
+        add_enemy(guid)
+    end    
+end)

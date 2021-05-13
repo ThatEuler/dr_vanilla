@@ -13,19 +13,28 @@ local function tick()
 
     if dark_addon.rotation.active_rotation then
 
+        if dark_addon.rotation.active_rotation.status then
+            dark_addon.rotation.active_rotation.status()
+        end
+
         cd = GetActionCooldown(61)
         if cd ~= 0 then
+            log("gcd")
             if dark_addon.rotation.active_rotation.gcd then
                 dark_addon.rotation.active_rotation.gcd()
             end
-            return
-        end
-    
-        if UnitAffectingCombat('player') then
+        elseif IsCasting() then
+            log("wait for spell cast")
+        elseif dark_addon.environment.hooks.sequenceactive() then
+            log("sequence")
+            dark_addon.environment.hooks.dosequence()
+        elseif UnitAffectingCombat('player') then
+            log("combat")
             if dark_addon.rotation.active_rotation.combat then
                 dark_addon.rotation.active_rotation.combat()
             end
         else
+            log("rest")
             if dark_addon.rotation.active_rotation.resting then
                 dark_addon.rotation.active_rotation.resting()
             end

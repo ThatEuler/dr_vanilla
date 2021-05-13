@@ -4,7 +4,7 @@ dark_addon.interface.status = function(text)
 end
   
 dark_addon.interface.status_extra = function(text)
-    --info_frame.text_right:SetText(text)
+    dr_status_extra:SetText(text)
 end
 
 dark_addon.interface.set_master = function(is_on)

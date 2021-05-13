@@ -5,16 +5,6 @@ dark_addon.unit = { }
 local unit = dark_addon.unit
 unit.calledUnit = nil
 
---[[
-local function log(...)
-    msg = tostring(arg[1])
-    for i = 1, arg.n do
-        msg = msg .. " " .. tostring(arg[i])
-    end
-    return dark_addon.console.debug(1, "unit.lua", "unit.lua", msg)
-end
---]]
-
 function unit:buff()
     return dark_addon.environment.conditions.buff(self)
 end
@@ -71,6 +61,14 @@ function unit:guid()
     return UnitGUID(self.unitID)
 end
 
+function unit:standing()
+    return UnitStandState(self.unitID) == 0
+end
+
+function unit:sitting()
+    return UnitStandState(self.unitID) == 1
+end
+
 function unit:canloot()
     if dark_addon.adv_protected then
         local obj = GetObjectWithGUID(UnitGUID(self.unitID))
@@ -92,18 +90,12 @@ function unit:canskin()
 end
 
 function unit:distance()
-    if dark_addon.adv_protected then
-        if ObjectExists(self.unitID) then
-        local dist = GetDistanceBetweenObjects('player', self.unitID)
-        if dist then
-            dist = dist * 100; dist = math.floor(dist); dist = dist / 100
-            return dist
-        else
-            return 100
-        end
-        else
+    local dist = GetDistanceBetweenUnits('player', self.unitID)
+    if dist then
+        dist = dist * 10; dist = math.floor(dist); dist = dist / 10
+        return dist
+    else
         return 100
-        end
     end
 end
 
@@ -151,7 +143,7 @@ function unit:casting()
     --   if cast_id ~= '0' or spell_id ~= '0' then return true else return false end
     -- end
     if not self.unitID == 'player' then return false end
-    castingname = CastingInfo("player")
+    castingname = IsCasting()
     if castingname then
         return true
     end
@@ -251,21 +243,24 @@ function unit:time_to_die()
         local time_change = GetTime() - death_tracker[self.unitID].time
         local health_per_time = health_change / time_change
         local time_to_die = UnitHealth(self.unitID) / health_per_time
-        return math.min(math.max(time_to_die, 0), 9999) -- give it the clamps
+        time_to_die = math.min(math.max(time_to_die, 0), 99)
+        time_to_die = time_to_die * 10; time_to_die = math.floor(time_to_die); time_to_die = time_to_die / 10
+        return time_to_die
     end
     if not death_tracker[self.unitID] then death_tracker[self.unitID] = {} end
     death_tracker[self.unitID].guid = UnitGUID(self.unitID)
     death_tracker[self.unitID].time = GetTime()
     death_tracker[self.unitID].health = UnitHealth(self.unitID)
-    return 9999
+    return 99
 end
 
 local function spell_cooldown(spell)
-    local time, value = GetSpellCooldown(spell)
-    if not time or time == 0 then
+    local duration, start = GetSpellCooldownMod(spell)
+    local clip = dark_addon.settings.fetch('_engine_castclip', 0)
+    if not duration or duration == 0 then
         return 0
     end
-    local cd = time + value - GetTime() - (select(4, GetNetStats()) / 1000)
+    local cd = duration + start - GetTime() - clip
     if cd > 0 then
         return cd
     else
@@ -277,8 +272,8 @@ local function spell_castable(sp)
     if type(sp) == 'table' then sp = sp.namerank end
     local usable, noMana = IsUsableSpell(sp)
     local inRange = IsSpellInRange(sp)
-    local onCooldown = false
-    dark_addon.console.debug(1, 'engine', 'engine', 'in unit:castable unit:target usable:'..tostring(usable)..' noMana:'..tostring(noMana)..' inRange:'..tostring(inRange)..' onCooldownon:'..tostring(onCooldown))
+    local onCooldown = (spell_cooldown(sp) == 0)
+    dark_addon.console.debug(4, 'engine', 'engine', 'in unit:castable unit:target spell: '.. sp .. ' usable:'..tostring(usable)..' noMana:'..tostring(noMana)..' inRange:'..tostring(inRange)..' onCooldown:'..tostring(onCooldown))
     return usable and not noMana and inRange and not onCooldown
 end
 
@@ -317,6 +312,14 @@ end
 
 function unit:dispellable(spell)
     return unit_dispellable
+end
+
+local function unit_position()
+    return UnitPosition(unit.calledUnit.unitID)
+end
+
+function unit:position()
+    return unit_position
 end
 
 function dark_addon.environment.conditions.unit(unitID)

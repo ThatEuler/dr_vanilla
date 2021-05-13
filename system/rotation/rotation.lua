@@ -38,6 +38,9 @@ function dark_addon.rotation.register(config)
   if config.combat_movement then
     setfenv(config.combat_movement, dark_addon.environment.env)
   end
+  if config.status then
+    setfenv(config.status, dark_addon.environment.env)
+  end
   dark_addon.rotation.rotation_store[config.name] = config
 end
 

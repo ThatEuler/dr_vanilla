@@ -1,14 +1,17 @@
 
-local InCombat, AutoAttackEnabled
-
 function _CastSpellByName(spell, target)
-    if target == 'player' then
-        CastSpellByName(spell, target)
-        dark_addon.console.debug(4, 'cast', 'red', spell .. ' on player')
-    else
-        CastSpellByName(spell)
-        dark_addon.console.debug(4, 'cast', 'red', spell)
+    if target then
+        TargetUnit(target)
     end
+    CastSpellByName(spell)
+    if target then
+        TargetLastTarget()
+    end
+    local targetname = "target"
+    if target then
+        targetname = UnitName(target)
+    end
+    dark_addon.console.debug(1, 'cast', 'red', spell .. ' on ' .. targetname)
     dark_addon.interface.status(spell)
 end
 
@@ -38,7 +41,7 @@ function _SpellStopCasting()
 end
 
 local function auto_attack()
-    if InCombat and not AutoAttackEnabled then
+    if AutoAttackGUID() == 0 then
         CastSpellByName('Attack')
     end
 end
@@ -64,6 +67,7 @@ end
 local turbo = false
 
 function dark_addon.environment.hooks.cast(spell, target)
+    if UnitStandState('player') ~= 0 then return end
     turbo = dark_addon.settings.fetch('_engine_turbo', false)
     if type(target) == 'table' then target = target.unitID end
     if type(spell) == 'table' then spell = spell.namerank end
@@ -75,16 +79,16 @@ function dark_addon.environment.hooks.cast(spell, target)
     end
     if  (turbo or not IsCasting()) then
         if target == 'ground' then
-        if tonumber(spell) then
-            _CastGroundSpellByID(spell, target)
+            if tonumber(spell) then
+                _CastGroundSpellByID(spell, target)
 
-        end
+            end
         else
-        if tonumber(spell) then
-            _CastSpellByID(spell, target)
-        else
-            _CastSpellByName(spell, target)
-        end
+            if tonumber(spell) then
+                _CastSpellByID(spell, target)
+            else
+                _CastSpellByName(spell, target)
+            end
         end
     end
 
@@ -110,7 +114,22 @@ function dark_addon.environment.hooks.macro(text)
     _RunMacroText(text)
 end
 
+--[[
 dark_addon.event.register("PLAYER_ENTER_COMBAT", function() AutoAttackEnabled = true end)
 dark_addon.event.register("PLAYER_LEAVE_COMBAT", function() AutoAttackEnabled = false end)
 dark_addon.event.register("PLAYER_REGEN_DISABLED", function() InCombat = true end)
 dark_addon.event.register("PLAYER_REGEN_ENABLED", function() InCombat = false end)
+
+dark_addon.event.register("SPELLCAST_START", function()
+    if arg1 ~= nil then SpellName = arg1 end
+    log("SPELLCAST_START arg1", arg1, "arg2", arg2, "arg3", arg3)
+end)
+dark_addon.event.register("SPELLCAST_STOP", function()
+    log("SPELLCAST_STOP SpellName ", SpellName, "arg1", arg1, "arg2", arg2, "arg3", arg3)
+    dark_addon.tmp.store('lastcast', SpellName)
+    SpellName = nil
+end)
+dark_addon.event.register("SPELLCAST_FAILED", function() log("SPELLCAST_FAILED arg1", arg1, "arg2", arg2, "arg3", arg3) end)
+dark_addon.event.register("SPELLCAST_INTERRUPTED", function() log("SPELLCAST_INTERRUPTED arg1", arg1, "arg2", arg2, "arg3", arg3) end)
+dark_addon.event.register("SPELLCAST_DELAYED", function() log("SPELLCAST_DELAYED arg1", arg1, "arg2", arg2, "arg3", arg3) end)
+--]]
