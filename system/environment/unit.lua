@@ -143,8 +143,8 @@ function unit:casting()
     --   if cast_id ~= '0' or spell_id ~= '0' then return true else return false end
     -- end
     if not self.unitID == 'player' then return false end
-    castingname = IsCasting()
-    if castingname then
+    castingname = CastingSpellID()
+    if castingname ~= 0 then
         return true
     end
     return false
@@ -256,13 +256,13 @@ end
 
 MAX_SKILLLINE_TABS = 8
 BOOKTYPE_SPELL = "spell"
-local function spell_cooldown(spell)
+local function spell_cooldown(spellname)
     for i = 1, MAX_SKILLLINE_TABS do
         local name, texture, offset, numSpells = GetSpellTabInfo(i)
 
         for id = offset + 1, offset + numSpells do
             local spell, rank = GetSpellName(id, BOOKTYPE_SPELL)
-            if spell == self.spell then
+            if spell == spellname then
                 local time, value = GetSpellCooldown(id, BOOKTYPE_SPELL)
                 local clip = dark_addon.settings.fetch('_engine_castclip', 0)
                 local cd = time + value - GetTime() - clip
@@ -274,19 +274,20 @@ local function spell_cooldown(spell)
             end
         end
     end
+    log("not found")
+    return 99
 end
 
-local function spell_castable(sp)
-    if type(sp) == 'table' then sp = sp.namerank end
+local function unit_castable(sp)
     local usable, noMana = IsUsableSpell(sp)
     local inRange = IsSpellInRange(sp)
-    local onCooldown = (spell_cooldown(sp) == 0)
-    dark_addon.console.debug(4, 'engine', 'engine', 'in unit:castable unit:target spell: '.. sp .. ' usable:'..tostring(usable)..' noMana:'..tostring(noMana)..' inRange:'..tostring(inRange)..' onCooldown:'..tostring(onCooldown))
+    local onCooldown = (spell_cooldown(sp) > 0)
+    dark_addon.console.debug(4, 'engine', 'engine', 'in unit:castable spell: '.. sp .. ' usable:'..tostring(usable)..' noMana:'..tostring(noMana)..' inRange:'..tostring(inRange)..' onCooldown:'..tostring(onCooldown).. " cooldown ".. tostring(spell_cooldown(sp)))
     return usable and not noMana and inRange and not onCooldown
 end
 
 function unit:castable()
-    return spell_castable
+    return unit_castable
 end
 
 local function check_removable(removable_type)

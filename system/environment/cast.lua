@@ -77,7 +77,7 @@ function dark_addon.environment.hooks.cast(spell, target)
         if tonumber(spell) then spell, _ = GetSpellInfo(spell) end
         dark_addon.console.debug(1, 'engine', 'engine', string.format('casting spell %s on %s. UnitHealth %d', spell, UnitName(target), UnitHealth(target)))
     end
-    if  (turbo or not IsCasting()) then
+    if  (turbo or CastingSpellID() == 0) then
         if target == 'ground' then
             if tonumber(spell) then
                 _CastGroundSpellByID(spell, target)

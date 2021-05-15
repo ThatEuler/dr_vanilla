@@ -48,11 +48,6 @@ end
 function dark_addon.fishing.fish()
     dark_addon.interface.status('Fishing...')
 
-    if UnitStandState('player') == 1 then
-        SitOrStand()
-        return
-    end
-
     if F.bobber and UnitName(F.bobber) == "Unknown" then
         --log("invalid bobber. reset")
         reset()

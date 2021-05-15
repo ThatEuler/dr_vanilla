@@ -15,6 +15,8 @@ local function tick()
         return
     end
 
+    if SetLastHardwareAction then SetLastHardwareAction(0) end
+
     if dark_addon.rotation.active_rotation then
 
         if dark_addon.rotation.active_rotation.status then
@@ -27,7 +29,7 @@ local function tick()
             if dark_addon.rotation.active_rotation.gcd then
                 dark_addon.rotation.active_rotation.gcd()
             end
-        --elseif IsCasting() then
+        --elseif CastingSpellID() ~= 0 then
         --    log("wait for spell cast")
         elseif dark_addon.fishing.enabled then
             --log("fishing")

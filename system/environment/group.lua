@@ -6,7 +6,7 @@ local group = { }
 local function group_count(func)
   local count = 0
   for unit in dark_addon.environment.iterator() do
-    if func(unit) then 
+    if not func or func(unit) then 
       count = count + 1
     end
   end

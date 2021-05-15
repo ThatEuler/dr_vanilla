@@ -66,10 +66,10 @@ local function buffs()
     local spells = {}
     local back2bear = false
 
-    if player.combat and -buff("Enrage") and player.buff("Bear Form").up and target.health.percent > 95 then
-        cast("Enrage", player)
-        return true
-    end
+    --if player.combat and -buff("Enrage") and player.buff("Bear Form").up and target.health.percent > 95 then
+    --    cast("Enrage", player)
+    --    return true
+    --end
 
     --TODO: check that enough mana for all spells before committing.
     if -buff("Mark of the Wild") or -buff("Thorns") and player.power.mana.percent >= 25 then
@@ -115,6 +115,11 @@ end
 dark_addon.environment.hook(combat_balance)
 
 local function combat_bear()
+    if target.debuff("Growl").down and target.castable("Growl") and 5 > 1 then
+        cast("Growl")
+        log("in combat. add growl debuff")
+        return true
+    end
     if target.castable("Demoralizing Roar") and target.debuff("Demoralizing Roar").down then return cast("Demoralizing Roar") end
     if target.time_to_die > 3 and target.castable("Maul") then return cast("Maul") end
 end
@@ -122,8 +127,9 @@ dark_addon.environment.hook(combat_bear)
 
 
 local function combat()
+    log("casting spell", CastingSpellID())
     if heal() then return end
-    --if buffs() then return end
+    if buffs() then return end
     if not target.exists or not target.enemy or not target.alive then return end
     auto_attack()
     if player.buff('Bear Form').up then
@@ -135,20 +141,42 @@ end
 
 local function resting()
     if player.dead then return end
-    --if heal() then return end
-    --if buffs() then return end
+    if heal() then return end
+    if buffs() then return end
 
     --if player.buff("Barkskin").down and -spell("Barkskin") == 0 then return cast("Barkskin") end
 
     if player.buff('Bear Form').down then
-        if target.exists and target.enemy and target.alive and target.castable("Moonfire") then return cast("Moonfire") end
+        if target.exists and target.enemy and target.alive and target.castable("Moonfire") then
+            log("opener: moonfire")
+            return cast("Moonfire")
+        end
+    else
+        if target.exists and target.enemy and target.alive then
+            if 5 > 1 then
+                if target.castable("Growl") then
+                    log("opener: GROWL")
+                    return cast("Growl")
+                end
+            else
+                if target.castable("Demoralizing Roar") then
+                    log("opened: Demoralizing Roar")
+                    return cast("Demoralizing Roar")
+                end
+            end
+        end
     end
+
+
+
+
     --local time, value = GetSpellCooldown2("Enrage")
     --local clip = dark_addon.settings.fetch('_engine_castclip', 0)
     --local cd = time + value - GetTime() - clip
     --if cd < 0 then cd = 0 end
     --log(GetSpellCooldown2("Enrage"))
     --log(cd, GetTime())
+
 end
 
 dark_addon.rotation.register({

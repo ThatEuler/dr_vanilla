@@ -15,6 +15,12 @@ dark_addon.environment.hook(have_buff)
 
 -- core sequence code
 
+local function reset()
+    current_sequence.complete = true
+    current_sequence.active = false
+    current_sequence.copy = nil
+end
+
 function dark_addon.environment.hooks.sequenceactive()
     return current_sequence and current_sequence.active
 end
@@ -34,6 +40,8 @@ function dark_addon.environment.hooks.startsequence(sequence)
 end
 
 function dark_addon.environment.hooks.dosequence()
+    if player.dead then reset(); return end
+
     local currcast = current_sequence.copy[1]
     log("currcast is", currcast.spell)
     if tonumber(currcast.spell) then
@@ -54,10 +62,9 @@ function dark_addon.environment.hooks.dosequence()
         currcast.casttime = nil
         table.remove(current_sequence.copy, 1)
         if table.getn(current_sequence.copy) == 0 then
-            current_sequence.complete = true
-            current_sequence.active = false
-            current_sequence.copy = nil
+            reset()
         end
     end
 end
+dark_addon.environment.hook(dark_addon.environment.hooks.dosequence)
 
