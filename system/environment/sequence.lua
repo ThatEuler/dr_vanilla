@@ -34,24 +34,23 @@ function dark_addon.environment.hooks.startsequence(sequence)
 end
 
 function dark_addon.environment.hooks.dosequence()
-    if IsCasting() then return end
     local currcast = current_sequence.copy[1]
-    --log("currcast is", currcast.spell)
+    log("currcast is", currcast.spell)
     if tonumber(currcast.spell) then
         currcast.spell = GetSpellInfo(currcast.spell)
     end
     local is_done = false
     if not currcast.is_done then is_done = (currcast.casttime ~= nil)
     else is_done = currcast.is_done(currcast.spell) end
-    --log("is_done", is_done, "casttime", currcast.casttime, "delta", (GetTime()-(currcast.casttime or 0)))
+    log("is_done", is_done, "casttime", currcast.casttime, "delta", (GetTime()-(currcast.casttime or 0)))
     if not is_done then
         if not currcast.casttime or (GetTime() - currcast.casttime) > 0.5 then
-            --log("casting", currcast.spell, "on", currcast.target, "at", GetTime())
+            log("casting", currcast.spell, "on", currcast.target, "at", GetTime())
             _CastSpellByName(currcast.spell, currcast.target)
             currcast.casttime = GetTime()
         end
     else
-        --log("step is good. move on to the next step.")
+        log("step is good. move on to the next step.")
         currcast.casttime = nil
         table.remove(current_sequence.copy, 1)
         if table.getn(current_sequence.copy) == 0 then

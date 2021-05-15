@@ -11,6 +11,7 @@ system\support\logger.lua
 system\support\storage.lua
 system\support\commands.lua
 system\support\data\icons.lua
+system\support\fishing.lua
 
 system\interface\interface.lua
 system\interface\buttons.lua
@@ -24,8 +25,8 @@ system\environment\buff.lua
 system\environment\debuff.lua
 system\environment\health.lua
 #system\environment\runes.lua
-#system\environment\powertype.lua
-#system\environment\power.lua
+system\environment\powertype.lua
+system\environment\power.lua
 system\environment\spell.lua
 system\environment\group.lua
 system\environment\enemies.lua

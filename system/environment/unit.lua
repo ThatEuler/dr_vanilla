@@ -21,9 +21,9 @@ function unit:spell()
     return dark_addon.environment.conditions.spell(self)
 end
 
---function unit:power()
---  return dark_addon.environment.conditions.power(self)
---end
+function unit:power()
+  return dark_addon.environment.conditions.power(self)
+end
 
 function unit:enemies()
     return dark_addon.environment.conditions.enemies(self)
@@ -254,17 +254,25 @@ function unit:time_to_die()
     return 99
 end
 
+MAX_SKILLLINE_TABS = 8
+BOOKTYPE_SPELL = "spell"
 local function spell_cooldown(spell)
-    local duration, start = GetSpellCooldownMod(spell)
-    local clip = dark_addon.settings.fetch('_engine_castclip', 0)
-    if not duration or duration == 0 then
-        return 0
-    end
-    local cd = duration + start - GetTime() - clip
-    if cd > 0 then
-        return cd
-    else
-        return 0
+    for i = 1, MAX_SKILLLINE_TABS do
+        local name, texture, offset, numSpells = GetSpellTabInfo(i)
+
+        for id = offset + 1, offset + numSpells do
+            local spell, rank = GetSpellName(id, BOOKTYPE_SPELL)
+            if spell == self.spell then
+                local time, value = GetSpellCooldown(id, BOOKTYPE_SPELL)
+                local clip = dark_addon.settings.fetch('_engine_castclip', 0)
+                local cd = time + value - GetTime() - clip
+                if cd > 0 then
+                    return cd
+                else
+                    return 0
+                end
+            end
+        end
     end
 end
 

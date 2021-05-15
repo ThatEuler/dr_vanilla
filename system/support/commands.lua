@@ -93,36 +93,36 @@ dark_addon.on_ready(function()
     dark_addon.commands.register({
         command = 'debug',
         arguments = {
-        'debug_level',
+            'debug_level',
         },
         text = 'Enable the debug console at the specified debug level',
         callback = function(debug_level)
-        if tonumber(debug_level) then
-            dark_addon.console.set_level(debug_level)
-            if tonumber(debug_level) > 0 then
-            dark_addon.console.toggle(true)
+            if tonumber(debug_level) then
+                dark_addon.console.set_level(debug_level)
+                if tonumber(debug_level) > 0 then
+                dark_addon.console.toggle(true)
+                else
+                dark_addon.console.toggle(false)
+                end
+                return true
             else
-            dark_addon.console.toggle(false)
+                return false
             end
-            return true
-        else
-            return false
-        end
         end
     })
 
     dark_addon.commands.register({
         command = 'toggle',
         arguments = {
-        'button_name',
+            'button_name',
         },
         text = 'Toggles the on/off state for the specified button',
         callback = function(button_name)
-        if button_name and dark_addon.interface.buttons.buttons[button_name] then
-            dark_addon.interface.buttons.buttons[button_name]:callback()
-            return true
-        end
-        return false
+            if button_name and dark_addon.interface.buttons.buttons[button_name] then
+                dark_addon.interface.buttons.buttons[button_name]:callback()
+                return true
+            end
+            return false
         end
     })
 
@@ -131,12 +131,26 @@ dark_addon.on_ready(function()
         arguments = { },
         text = 'Shows the core engine config window.',
         callback = function(button_name)
-        if dark_addon.econf.parent:IsShown() then
-            dark_addon.econf.parent:Hide()
-        else
-            dark_addon.econf.parent:Show()
+            if dark_addon.econf.parent:IsShown() then
+                dark_addon.econf.parent:Hide()
+            else
+                dark_addon.econf.parent:Show()
+            end
+            return true
         end
-        return true
+    })
+
+    dark_addon.commands.register({
+        command = 'fish',
+        arguments = { },
+        text = 'Toggle fishing on/off',
+        callback = function(button_name)
+            if dark_addon.fishing.enabled then
+                dark_addon.fishing.stop()
+            else
+                dark_addon.fishing.start()
+            end
+            return true
         end
     })
 end)

@@ -71,7 +71,8 @@ local function buffs()
         return true
     end
 
-    if -buff("Mark of the Wild") or -buff("Thorns") then
+    --TODO: check that enough mana for all spells before committing.
+    if -buff("Mark of the Wild") or -buff("Thorns") and player.power.mana.percent >= 25 then
         if player.buff("Bear Form").up then
             back2bear = true
             table.insert(spells, {spell="Bear Form", target="player", is_done=dont_have_buff})
@@ -96,6 +97,7 @@ local function status()
     local nenemies = enemies.count(function(unit)
         return true
     end)
+    msg = msg .. "M:" .. math.floor(player.power.mana.percent) .. " "
     if dark_addon.environment.hooks.sequenceactive() then
         msg = msg .. "SequenceActive "
     end
@@ -121,9 +123,9 @@ dark_addon.environment.hook(combat_bear)
 
 local function combat()
     if heal() then return end
+    --if buffs() then return end
     if not target.exists or not target.enemy or not target.alive then return end
     auto_attack()
-    if buffs() then return end
     if player.buff('Bear Form').up then
         return combat_bear()
     else
@@ -132,19 +134,21 @@ local function combat()
 end
 
 local function resting()
-    log('1')
     if player.dead then return end
-    log('2')
-    if heal() then return end
-    log('3')
-    if buffs() then return end
-    log('4')
+    --if heal() then return end
+    --if buffs() then return end
 
     --if player.buff("Barkskin").down and -spell("Barkskin") == 0 then return cast("Barkskin") end
 
     if player.buff('Bear Form').down then
         if target.exists and target.enemy and target.alive and target.castable("Moonfire") then return cast("Moonfire") end
     end
+    --local time, value = GetSpellCooldown2("Enrage")
+    --local clip = dark_addon.settings.fetch('_engine_castclip', 0)
+    --local cd = time + value - GetTime() - clip
+    --if cd < 0 then cd = 0 end
+    --log(GetSpellCooldown2("Enrage"))
+    --log(cd, GetTime())
 end
 
 dark_addon.rotation.register({

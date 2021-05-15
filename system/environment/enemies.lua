@@ -64,7 +64,7 @@ local function remove_enemy(unitID)
 end
 
 C_Timer.NewTicker(0.5, function()
-    local guids = GetObjects()
+    local guids = GetUnits()
     enemies_cache = {}
     for _, guid in guids do
         add_enemy(guid)

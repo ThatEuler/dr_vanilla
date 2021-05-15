@@ -5,17 +5,26 @@ BOOKTYPE_SPELL = "spell"
 local spell = { }
 
 function spell:cooldown()
-    local duration, start = GetSpellCooldownMod(spell)
-    local clip = dark_addon.settings.fetch('_engine_castclip', 0)
-    if not duration or duration == 0 then
-        return 0
+
+    for i = 1, MAX_SKILLLINE_TABS do
+        local name, texture, offset, numSpells = GetSpellTabInfo(i)
+
+        for id = offset + 1, offset + numSpells do
+            local spell, rank = GetSpellName(id, BOOKTYPE_SPELL)
+            --log(id, "|", spell, "|", rank)
+            if spell == self.spell then
+                local time, value = GetSpellCooldown(id, BOOKTYPE_SPELL)
+                local clip = dark_addon.settings.fetch('_engine_castclip', 0)
+                local cd = time + value - GetTime() - clip
+                if cd > 0 then
+                    return cd
+                else
+                    return 0
+                end
+            end
+        end
     end
-    local cd = duration + start - GetTime() - clip
-    if cd > 0 then
-        return cd
-    else
-        return 0
-    end
+    return 0
 end
 
 function spell:exists()

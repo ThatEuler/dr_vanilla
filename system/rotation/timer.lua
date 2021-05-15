@@ -1,9 +1,13 @@
 
 dark_addon.rotation.timer = {
     lag = 0
-  }
+}
+
+local last_loading = GetTime()
+local loading_wait = math.random(120, 300)
   
 local function tick()
+    --log("tick")
 
     --if IsMounted() then return end
     if not master_toggle:GetChecked() then
@@ -19,24 +23,38 @@ local function tick()
 
         cd = GetActionCooldown(61)
         if cd ~= 0 then
-            log("gcd")
+            --log("gcd")
             if dark_addon.rotation.active_rotation.gcd then
                 dark_addon.rotation.active_rotation.gcd()
             end
-        elseif IsCasting() then
-            log("wait for spell cast")
+        --elseif IsCasting() then
+        --    log("wait for spell cast")
+        elseif dark_addon.fishing.enabled then
+            --log("fishing")
+            dark_addon.fishing.fish()
         elseif dark_addon.environment.hooks.sequenceactive() then
-            log("sequence")
+            --log("sequence")
             dark_addon.environment.hooks.dosequence()
         elseif UnitAffectingCombat('player') then
-            log("combat")
+            --log("combat")
             if dark_addon.rotation.active_rotation.combat then
                 dark_addon.rotation.active_rotation.combat()
             end
         else
-            log("rest")
+            --log("rest")
             if dark_addon.rotation.active_rotation.resting then
                 dark_addon.rotation.active_rotation.resting()
+            end
+            --log(GetTime() - last_loading, loading_wait)
+            if GetTime() - last_loading > loading_wait then
+                dark_addon.interface.status(
+                  dark_addon.interface.loading_messages[math.random(table.getn(dark_addon.interface.loading_messages))],
+                  10
+                )
+                last_loading = GetTime()
+                loading_wait = math.random(120, 300)
+            else
+                dark_addon.interface.status('Resting...')
             end
         end
     else
