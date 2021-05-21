@@ -1,4 +1,7 @@
 
+local InCombat = false
+local AutoAttackEnabled = false
+
 function _CastSpellByName(spell, target)
     if target then
         TargetUnit(target)
@@ -41,7 +44,8 @@ function _SpellStopCasting()
 end
 
 local function auto_attack()
-    if AutoAttackGUID() == 0 then
+    --log("AutoRepeatSpell", GetAutoRepeatingSpell())
+    if not IsCurrentAction(1) then
         CastSpellByName('Attack')
     end
 end
@@ -114,11 +118,11 @@ function dark_addon.environment.hooks.macro(text)
     _RunMacroText(text)
 end
 
---[[
 dark_addon.event.register("PLAYER_ENTER_COMBAT", function() AutoAttackEnabled = true end)
 dark_addon.event.register("PLAYER_LEAVE_COMBAT", function() AutoAttackEnabled = false end)
 dark_addon.event.register("PLAYER_REGEN_DISABLED", function() InCombat = true end)
 dark_addon.event.register("PLAYER_REGEN_ENABLED", function() InCombat = false end)
+--[[
 
 dark_addon.event.register("SPELLCAST_START", function()
     if arg1 ~= nil then SpellName = arg1 end

@@ -29,8 +29,8 @@ local function tick()
             if dark_addon.rotation.active_rotation.gcd then
                 dark_addon.rotation.active_rotation.gcd()
             end
-        --elseif CastingSpellID() ~= 0 then
-        --    log("wait for spell cast")
+        elseif CastingSpellID() ~= 0 then
+            --log("wait for spell cast")
         elseif dark_addon.fishing.enabled then
             --log("fishing")
             dark_addon.fishing.fish()
@@ -39,6 +39,7 @@ local function tick()
             dark_addon.environment.hooks.dosequence()
         elseif UnitAffectingCombat('player') then
             --log("combat")
+            dark_addon.interface.status('Combat...')
             if dark_addon.rotation.active_rotation.combat then
                 dark_addon.rotation.active_rotation.combat()
             end

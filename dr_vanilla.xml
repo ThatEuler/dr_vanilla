@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 
     <Frame name="container_frame" parent="UIParent">
-        <Size x="196" y="56"/>
+        <Size x="276" y="56"/>
         <Anchors>
             <Anchor point="TOP" relativePoint="TOP" relativeTo="UIParent"/>
         </Anchors>
@@ -18,7 +18,7 @@
         <Frames>
             <Button name="container_frame_status">
                 <Size>
-                    <AbsDimension x="196" y="24"/>
+                    <AbsDimension x="276" y="24"/>
                 </Size>
                 <Anchors>
                     <Anchor point="TOPLEFT">
@@ -28,7 +28,7 @@
                     <Layer level="BACKGROUND">
                         <FontString name="dr_status" inherits="GameFontNormalSmall" text="Welcome..." justifyH="LEFT">
                             <Size>
-                                <AbsDimension x="128" y="18"/>
+                                <AbsDimension x="276" y="18"/>
                             </Size>
                             <Anchors>
                                 <Anchor point="TOPLEFT"/>
@@ -36,7 +36,7 @@
                         </FontString>
                         <FontString name="dr_status_extra" inherits="GameFontNormalSmall" text="" justifyH="RIGHT">
                             <Size>
-                                <AbsDimension x="128" y="18"/>
+                                <AbsDimension x="276" y="18"/>
                             </Size>
                             <Anchors>
                                 <Anchor point="TOPRIGHT"/>
@@ -62,8 +62,18 @@
                 <Anchors><Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="interrupts"><Offset><AbsDimension x="4" y="0"/></Offset></Anchor></Anchors>
                 <Layers><Layer level="ARTWORK"><FontString name="multitarget_text" inherits="GameFontNormalSmall" text="MT"><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors></FontString></Layer></Layers>
             </CheckButton>
-            <CheckButton name="settings" inherits="ActionButtonTemplate">
+            <CheckButton name="damage_toggle" inherits="ActionButtonTemplate">
                 <Anchors><Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="multitarget"><Offset><AbsDimension x="4" y="0"/></Offset></Anchor></Anchors>
+                <Layers><Layer level="ARTWORK"><FontString name="damage_toggle_text" inherits="GameFontNormalSmall" text="DMG"><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors></FontString></Layer></Layers>
+                <Scripts><OnClick>dark_addon.interface.set_damage(this:GetChecked())</OnClick></Scripts>
+            </CheckButton>
+            <CheckButton name="healing_toggle" inherits="ActionButtonTemplate">
+                <Anchors><Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="damage_toggle"><Offset><AbsDimension x="4" y="0"/></Offset></Anchor></Anchors>
+                <Layers><Layer level="ARTWORK"><FontString name="healing_toggle_text" inherits="GameFontNormalSmall" text="Heal"><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors></FontString></Layer></Layers>
+                <Scripts><OnClick>dark_addon.interface.set_healing(this:GetChecked())</OnClick></Scripts>
+            </CheckButton>
+            <CheckButton name="settings" inherits="ActionButtonTemplate">
+                <Anchors><Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="healing_toggle"><Offset><AbsDimension x="4" y="0"/></Offset></Anchor></Anchors>
                 <Layers><Layer level="ARTWORK"><FontString name="settings_text" inherits="GameFontNormalSmall" text="CFG"><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors></FontString></Layer></Layers>
             </CheckButton>
         </Frames>

@@ -1,5 +1,7 @@
 
 local function heal()
+    if not healing_toggle:GetChecked() then return end
+
     local spells = {}
     local back2bear = false
 
@@ -115,22 +117,27 @@ end
 dark_addon.environment.hook(combat_balance)
 
 local function combat_bear()
-    if target.debuff("Growl").down and target.castable("Growl") and 5 > 1 then
-        cast("Growl")
-        log("in combat. add growl debuff")
+    if player.castable("Enrage") and target.health.percent >= 95 then
+        cast("Enrage")
         return true
     end
+    if target.debuff("Growl").down and target.castable("Growl") and group.num > 1 then
+        cast("Growl")
+        return true
+    end
+    --log(target.castable("Demoralizing Roar"), target.debuff("Demoralizing Roar").down)
     if target.castable("Demoralizing Roar") and target.debuff("Demoralizing Roar").down then return cast("Demoralizing Roar") end
-    if target.time_to_die > 3 and target.castable("Maul") then return cast("Maul") end
+    --log(target.castable("Maul"), target.time_to_die > 3)
+    if target.castable("Maul") and target.time_to_die > 3 then return cast("Maul") end
 end
 dark_addon.environment.hook(combat_bear)
 
 
 local function combat()
-    log("casting spell", CastingSpellID())
     if heal() then return end
     if buffs() then return end
     if not target.exists or not target.enemy or not target.alive then return end
+    if not damage_toggle:GetChecked() then return end
     auto_attack()
     if player.buff('Bear Form').up then
         return combat_bear()
@@ -152,8 +159,9 @@ local function resting()
             return cast("Moonfire")
         end
     else
-        if target.exists and target.enemy and target.alive then
-            if 5 > 1 then
+        if target.exists and target.enemy and target.alive and target.distance < 5 then
+            auto_attack()
+            if group.num > 1 then
                 if target.castable("Growl") then
                     log("opener: GROWL")
                     return cast("Growl")
@@ -167,15 +175,13 @@ local function resting()
         end
     end
 
-
-
-
     --local time, value = GetSpellCooldown2("Enrage")
     --local clip = dark_addon.settings.fetch('_engine_castclip', 0)
     --local cd = time + value - GetTime() - clip
     --if cd < 0 then cd = 0 end
     --log(GetSpellCooldown2("Enrage"))
     --log(cd, GetTime())
+    log("mana for wrath", ManaCost(5176))
 
 end
 

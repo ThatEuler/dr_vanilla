@@ -3,6 +3,11 @@ local UnitReverseDebuff = dark_addon.environment.unit_reverse_debuff
 
 local group = { }
 
+
+function group:num()
+  return GetNumGroupMembers()
+end
+
 local function group_count(func)
   local count = 0
   for unit in dark_addon.environment.iterator() do

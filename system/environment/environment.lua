@@ -70,7 +70,7 @@ function dark_addon.environment.iterator(raw)
       returned_solo = true
       called = 'player'
     elseif group_type ~= 'solo' then
-      if index <= members then
+      if index < members then
         index = index + 1
         if group_type == 'party' and index == members then
           called = 'player'
