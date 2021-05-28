@@ -10,8 +10,9 @@ system\support\events.lua
 system\support\logger.lua
 system\support\storage.lua
 system\support\commands.lua
-system\support\data\icons.lua
 system\support\fishing.lua
+system\support\data\icons.lua
+system\support\data\locations.lua
 
 system\interface\interface.lua
 system\interface\buttons.lua

@@ -144,11 +144,27 @@ dark_addon.on_ready(function()
         command = 'fish',
         arguments = { },
         text = 'Toggle fishing on/off',
-        callback = function(button_name)
+        callback = function()
             if dark_addon.fishing.enabled then
                 dark_addon.fishing.stop()
             else
                 dark_addon.fishing.start()
+            end
+            return true
+        end
+    })
+
+    dark_addon.commands.register({
+        command = 'tele',
+        arguments = { 'location' },
+        text = 'Teleport to location',
+        callback = function(location)
+            local loc = dark_addon.locations[location]
+            log(loc.x, loc.y, loc.z)
+            if not loc.x then
+                dark_addon.error("Unknown location: ", location)
+            else
+                SetPosition(loc.x, loc.y, loc.z)
             end
             return true
         end

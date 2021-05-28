@@ -99,7 +99,12 @@ local function status()
     local nenemies = enemies.count(function(unit)
         return true
     end)
-    msg = msg .. "M:" .. math.floor(player.power.mana.percent) .. " "
+    local x, y, z = UnitPosition('player')
+    x = x * 10; x = math.floor(x); x = x / 10
+    y = y * 10; y = math.floor(y); y = y / 10
+    z = z * 10; z = math.floor(z); z = z / 10
+    msg = msg .. tostring(x) .. ", " .. tostring(y) .. ", " .. tostring(z)
+    msg = msg .. " M:" .. math.floor(player.power.mana.percent) .. " "
     if dark_addon.environment.hooks.sequenceactive() then
         msg = msg .. "SequenceActive "
     end
@@ -174,14 +179,6 @@ local function resting()
             end
         end
     end
-
-    --local time, value = GetSpellCooldown2("Enrage")
-    --local clip = dark_addon.settings.fetch('_engine_castclip', 0)
-    --local cd = time + value - GetTime() - clip
-    --if cd < 0 then cd = 0 end
-    --log(GetSpellCooldown2("Enrage"))
-    --log(cd, GetTime())
-    log("mana for wrath", ManaCost(5176))
 
 end
 
