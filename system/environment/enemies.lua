@@ -52,7 +52,10 @@ function dark_addon.environment.conditions.enemies()
 end
 
 local function add_enemy(unitID)
-    if not enemies_cache[unitID] and UnitIsEnemy("player", unitID) then
+    --log("addenemy", unitID, UnitName(unitID), UnitTarget(unitID), UnitReaction("player", unitID))
+    -- TODO: it would be better to add neutral enemy units only after they aggro a team member.
+    -- Maybe add UnitThreatSituation??
+    if not enemies_cache[unitID] and UnitReaction("player", unitID) <= 4 then
         enemies_cache[unitID] = dark_addon.environment.conditions.unit(unitID)
     end
 end

@@ -161,7 +161,7 @@ dark_addon.on_ready(function()
         callback = function(location)
             local loc = dark_addon.locations[location]
             log(loc.x, loc.y, loc.z)
-            if not loc.x then
+            if not loc or not loc.x then
                 dark_addon.error("Unknown location: ", location)
             else
                 SetPosition(loc.x, loc.y, loc.z)

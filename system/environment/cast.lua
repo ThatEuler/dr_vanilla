@@ -3,16 +3,19 @@ local InCombat = false
 local AutoAttackEnabled = false
 
 function _CastSpellByName(spell, target)
-    if target then
-        TargetUnit(target)
-    end
-    CastSpellByName(spell)
-    if target then
-        TargetLastTarget()
-    end
     local targetname = "target"
     if target then
         targetname = UnitName(target)
+    end
+    if target then
+        log("will target", target, "for spell", spell)
+        TargetUnit(target)
+    end
+    dark_addon.cdkey = UnitGUID("target") .. ":" .. UnitName("target") .. ":" .. spell
+    log("ECD start to watch cdkey", dark_addon.cdkey)
+    CastSpellByName(spell)
+    if target then
+        TargetLastTarget()
     end
     dark_addon.console.debug(1, 'cast', 'red', spell .. ' on ' .. targetname)
     dark_addon.interface.status(spell)

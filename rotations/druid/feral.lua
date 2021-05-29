@@ -1,68 +1,6 @@
+dark_addon.druid = { }
+local D = dark_addon.druid
 
-local function heal()
-    if not healing_toggle:GetChecked() then return end
-
-    local spells = {}
-    local back2bear = false
-
-    -- save up for Rejuv
-    if player.health.percent < 75 and player.buff("Rejuvenation").down and not castable("Rejuvenation") then
-        log("save for Rejuv")
-        return true
-    end
-
----[[
-    -- regrowth
-    if player.health.percent < 50 and -buff("Regrowth") then
-        if player.buff("Bear Form").up then
-            back2bear = true
-            table.insert(spells, {spell="Bear Form", target="player", is_done=dont_have_buff})
-        end
-        table.insert(spells, {spell="Regrowth", target="player", is_done=have_buff})
-        if back2bear then
-            table.insert(spells, {spell="Bear Form", target="player", is_done=have_buff})
-        end
-        startsequence({spells = spells})
-        log("regrowth seq")
-        return true
-    end
---]]
-
----[[
-    -- rejuv
-    if player.health.percent < 75 and -buff("Rejuvenation") then
-        if player.buff("Bear Form").up then
-            back2bear = true
-            table.insert(spells, {spell="Bear Form", target="player", is_done=dont_have_buff})
-        end
-        table.insert(spells, {spell="Rejuvenation", target="player", is_done=have_buff})
-        if back2bear then
-            table.insert(spells, {spell="Bear Form", target="player", is_done=have_buff})
-        end
-        startsequence({spells = spells})
-        log("rejuv seq")
-        return true
-    end
---]]
-
----[[
-    -- Healing Touch
-    if player.health.percent < 33 and player.castable("Healing Touch") then
-        if player.buff("Bear Form").up then
-            back2bear = true
-            table.insert(spells, {spell="Bear Form", target="player", is_done=dont_have_buff})
-        end
-        table.insert(spells, {spell="Healing Touch", target="player"})
-        if back2bear then
-            table.insert(spells, {spell="Bear Form", target="player", is_done=have_buff})
-        end
-        log("healing touch seq")
-        startsequence({spells = spells})
-        return true
-    end
---]]
-end
-dark_addon.environment.hook(heal)
 
 local function buffs()
     local spells = {}
@@ -96,9 +34,7 @@ dark_addon.environment.hook(buffs)
 
 local function status()
     local msg = ""
-    local nenemies = enemies.count(function(unit)
-        return true
-    end)
+    local nenemies = enemies.around(5)
     local x, y, z = UnitPosition('player')
     x = x * 10; x = math.floor(x); x = x / 10
     y = y * 10; y = math.floor(y); y = y / 10
@@ -126,9 +62,12 @@ local function combat_bear()
         cast("Enrage")
         return true
     end
-    if target.debuff("Growl").down and target.castable("Growl") and group.num > 1 then
+    if target.debuff("Growl").down and target.castable("Growl") and group.num > 1 and not UnitIsUnit("targettarget", "player") then
         cast("Growl")
         return true
+    end
+    if enemies.around(5) > 1 and target.castable("Swipe") then
+        return cast("Swipe")
     end
     --log(target.castable("Demoralizing Roar"), target.debuff("Demoralizing Roar").down)
     if target.castable("Demoralizing Roar") and target.debuff("Demoralizing Roar").down then return cast("Demoralizing Roar") end
@@ -139,7 +78,8 @@ dark_addon.environment.hook(combat_bear)
 
 
 local function combat()
-    if heal() then return end
+    if D.heal and D.heal() then return end
+    if D.group_heal and D.group_heal() then return end
     if buffs() then return end
     if not target.exists or not target.enemy or not target.alive then return end
     if not damage_toggle:GetChecked() then return end
@@ -153,7 +93,8 @@ end
 
 local function resting()
     if player.dead then return end
-    if heal() then return end
+    if D.heal and D.heal() then return end
+    if D.group_heal and D.group_heal() then return end
     if buffs() then return end
 
     --if player.buff("Barkskin").down and -spell("Barkskin") == 0 then return cast("Barkskin") end

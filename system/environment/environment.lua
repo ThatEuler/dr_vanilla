@@ -23,7 +23,7 @@ dark_addon.environment.GetSpellName = GetSpellName
 
 dark_addon.environment.env = setmetatable(env, {
   __index = function(_env, called)
-    --local ds = debugstack(2, 1, 0)
+    local ds = debugstack(2, 1, 0)
     --local file, line = string.match(ds, '^.-\(%a-%.lua):(%d+):.+$')
     --dark_addon.console.file = file
     --dark_addon.console.line = line
@@ -34,7 +34,12 @@ dark_addon.environment.env = setmetatable(env, {
       return dark_addon.environment.unit_cache[called]
     elseif dark_addon.environment.virtual.validate(called) then
       local resolved, virtual_type = dark_addon.environment.virtual.resolve(called)
+      if resolved == nil then
+        log("hiccup")
+        return
+      end
       if virtual_type == 'unit' then
+        --log("here", ds, resolved, dark_addon.environment.unit_cache[resolved], dark_addon.environment.conditions.unit(resolved))
         if not dark_addon.environment.unit_cache[resolved] then
           dark_addon.environment.unit_cache[resolved] = dark_addon.environment.conditions.unit(resolved)
         end

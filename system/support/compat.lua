@@ -41,3 +41,8 @@ dark_addon.log = log
 function string.ends_with(str, ending)
     return ending == "" or string.sub(str, -string.len(ending)) == ending
 end
+
+function UnitInRange(unit)
+    local dist = GetDistanceBetweenUnits('player', unit)
+    return dist and dist <= 40
+end

@@ -39,6 +39,7 @@ system\rotation\timer.lua
 system\interface\draw.lua
 
 rotations\druid\feral.lua
+rotations\druid\heal.lua
 
 system\support\ready.lua
 

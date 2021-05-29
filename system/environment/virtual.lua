@@ -25,7 +25,7 @@ function dark_addon.environment.virtual.resolve(virtualID)
 end
 
 function dark_addon.environment.virtual.targets.lowest()
-    local members = GetNumPartyMembers()
+    local members = GetNumGroupMembers()
     local group_type = GroupType()
     if dark_addon.environment.virtual.resolvers[group_type] then
         return dark_addon.environment.virtual.resolvers[group_type](members)
@@ -35,6 +35,7 @@ end
 function dark_addon.environment.virtual.resolvers.unit(unitA, unitB)
     local healthA = UnitHealth(unitA) / UnitHealthMax(unitA) * 100
     local healthB = UnitHealth(unitB) / UnitHealthMax(unitB) * 100
+    log("compare", unitA, unitB, "health", healthA, healthB)
     if healthA < healthB then
         return unitA, healthA
     else
@@ -47,13 +48,12 @@ function dark_addon.environment.virtual.resolvers.party(members)
     local lowest_health
     for i = 1, (members - 1) do
         local unit = 'party' .. i
-        --if not UnitCanAttack('player', unit) and UnitInRange(unit) and not UnitIsDeadOrGhost(unit) then
-        if not UnitCanAttack('player', unit) and not UnitIsDeadOrGhost(unit) then
-                if not lowest then
-            lowest, lowest_health = dark_addon.environment.virtual.resolvers.unit(unit, 'player')
-        else
-            lowest, lowest_health = dark_addon.environment.virtual.resolvers.unit(unit, lowest)
-        end
+        if not UnitCanAttack('player', unit) and UnitInRange(unit) and not UnitIsDeadOrGhost(unit) then
+            if not lowest then
+                lowest, lowest_health = dark_addon.environment.virtual.resolvers.unit(unit, 'player')
+            else
+                lowest, lowest_health = dark_addon.environment.virtual.resolvers.unit(unit, lowest)
+            end
         end
     end
     return lowest

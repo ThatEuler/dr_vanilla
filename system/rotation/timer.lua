@@ -5,7 +5,7 @@ dark_addon.rotation.timer = {
 
 local last_loading = GetTime()
 local loading_wait = math.random(120, 300)
-  
+
 local function tick()
     --log("tick")
 
@@ -23,6 +23,22 @@ local function tick()
             dark_addon.rotation.active_rotation.status()
         end
 
+        -- extra cooldown tracking
+        if CastingSpellID() == 0 and dark_addon.cdkey ~= nil then
+            local cdend = GetTime() + 0.5
+            log("ECD spell cast finish. set cd of", dark_addon.cdkey, "to", cdend)
+            dark_addon.cooldowns[dark_addon.cdkey] = cdend
+            dark_addon.cdkey = nil
+        end
+        local key, cd, ctime
+        ctime = GetTime()
+        for key, cd in pairs(dark_addon.cooldowns) do
+            if ctime > cd + 1 then
+                log("ECD clear out this spell cd", key)
+                dark_addon.cooldowns[key] = nil
+            end
+        end
+
         cd = GetActionCooldown(61)
         if cd ~= 0 then
             --log("gcd")
@@ -30,7 +46,7 @@ local function tick()
                 dark_addon.rotation.active_rotation.gcd()
             end
         elseif CastingSpellID() ~= 0 then
-            --log("wait for spell cast")
+            log("wait for spell cast", CastingSpellID())
         elseif dark_addon.fishing.enabled then
             --log("fishing")
             dark_addon.fishing.fish()

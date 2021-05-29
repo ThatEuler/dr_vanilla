@@ -69,6 +69,10 @@ function unit:sitting()
     return UnitStandState(self.unitID) == 1
 end
 
+function unit:target()
+    return UnitTarget(self.unitID)
+end
+
 function unit:canloot()
     if dark_addon.adv_protected then
         local obj = GetObjectWithGUID(UnitGUID(self.unitID))
@@ -282,8 +286,12 @@ local function unit_castable(sp)
     local usable, noMana = IsUsableSpell(sp)
     local inRange = IsSpellInRange(sp)
     local onCooldown = (spell_cooldown(sp) > 0)
+    --log("id", unit.calledUnit.unitID, "guid", UnitGUID(unit.calledUnit.unitID), "sp", sp)
+    local key = UnitGUID(unit.calledUnit.unitID) .. ":" .. UnitName(unit.calledUnit.unitID) .. ":" .. sp
+    local onCooldown2 = dark_addon.cooldowns[key] and (GetTime() < dark_addon.cooldowns[key])
+    log("ECD check", key, onCooldown2)
     dark_addon.console.debug(4, 'engine', 'engine', 'in unit:castable spell: '.. sp .. ' usable:'..tostring(usable)..' noMana:'..tostring(noMana)..' inRange:'..tostring(inRange)..' onCooldown:'..tostring(onCooldown).. " cooldown ".. tostring(spell_cooldown(sp)))
-    return usable and not noMana and inRange and not onCooldown
+    return usable and not noMana and inRange and not onCooldown and not onCooldown2
 end
 
 function unit:castable()

@@ -10,6 +10,7 @@ dark_addon.ready = false
 dark_addon.settings_ready = false
 dark_addon.ready_callbacks = { }
 dark_addon.protected = true
+dark_addon.cooldowns = { }
 
 function dark_addon.on_ready(callback)
   dark_addon.ready_callbacks[callback] = callback
