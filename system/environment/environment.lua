@@ -35,7 +35,7 @@ dark_addon.environment.env = setmetatable(env, {
     elseif dark_addon.environment.virtual.validate(called) then
       local resolved, virtual_type = dark_addon.environment.virtual.resolve(called)
       if resolved == nil then
-        log("hiccup")
+        chat("hiccup")
         return
       end
       if virtual_type == 'unit' then
@@ -49,6 +49,11 @@ dark_addon.environment.env = setmetatable(env, {
           dark_addon.environment.group_cache = dark_addon.environment.conditions.group()
         end
         return dark_addon.environment.group_cache
+      elseif virtual_type == 'players' then
+        if not dark_addon.environment.players_cache then
+          dark_addon.environment.players_cache = dark_addon.environment.conditions.players()
+        end
+        return dark_addon.environment.players_cache
       end
     elseif dark_addon.environment.hooks[called] then
       if not dark_addon.environment.hook_cache[called] then
@@ -118,7 +123,8 @@ dark_addon.environment.unit_reverse_debuff = function(target, candidates)
   local i = 0; local go = true
   while i <= 40 and go do
     i = i + 1
-    debuff, _, count, _, duration, expires, caster, _, _, spellID = _G['UnitDebuff'](target, i)
+    a, b, c = UnitDebuff(target, i)
+    --chat(target, i, a, b, c)
     if candidates[spellID] then go = false end
   end
   return debuff, count, duration, expires, caster, candidates[spellID]

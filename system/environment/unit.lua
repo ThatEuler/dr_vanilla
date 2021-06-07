@@ -290,8 +290,16 @@ local function unit_castable(sp)
     local key = UnitGUID(unit.calledUnit.unitID) .. ":" .. UnitName(unit.calledUnit.unitID) .. ":" .. sp
     local onCooldown2 = dark_addon.cooldowns[key] and (GetTime() < dark_addon.cooldowns[key])
     log("ECD check", key, onCooldown2)
+    -- check line of sight
+    local x = nil
+    local px, py, pz = UnitPosition("player")
+    local ex, ey, ez = UnitPosition(unit.calledUnit.unitID)
+    if px and ex then
+        x = TraceLine(px, py, pz+2, ex, ey, ez+2)
+    end
+    --log("TL check cast of", sp, "on", UnitName(unit.calledUnit.unitID), "hit", x)
     dark_addon.console.debug(4, 'engine', 'engine', 'in unit:castable spell: '.. sp .. ' usable:'..tostring(usable)..' noMana:'..tostring(noMana)..' inRange:'..tostring(inRange)..' onCooldown:'..tostring(onCooldown).. " cooldown ".. tostring(spell_cooldown(sp)))
-    return usable and not noMana and inRange and not onCooldown and not onCooldown2
+    return usable and not noMana and inRange and not onCooldown and not onCooldown2 and x == nil
 end
 
 function unit:castable()
@@ -299,7 +307,7 @@ function unit:castable()
 end
 
 local function check_removable(removable_type)
-    local debuff, count, duration, expires, caster, found_debuff = UnitReverseDebuff(unit.calledUnit.unitID, dark_addon.data.removables[removable_type])
+    local debuff, count, duration, expires, caster, found_debuff = UnitReverseDebuff(unit.calledUnit.unitID, dark_addon.data[removable_type])
     if debuff and (count == 0 or count >= found_debuff.count) and unit.calledUnit.health.percent <= found_debuff.health then
         return unit
     end
@@ -309,11 +317,11 @@ end
 local function unit_removable(...)
     for i = 1, arg.n do
         local removable_type = arg[i]
-        if dark_addon.data.removables[removable_type] then
-        local possible_unit = check_removable(removable_type)
-        if possible_unit then
-            return possible_unit
-        end
+        if dark_addon.data[removable_type] then
+            local possible_unit = check_removable(removable_type)
+            if possible_unit then
+                return possible_unit
+            end
         end
     end
     return false

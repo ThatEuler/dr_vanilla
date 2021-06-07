@@ -5,14 +5,31 @@ dark_addon.rotation.timer = {
 
 local last_loading = GetTime()
 local loading_wait = math.random(120, 300)
+local isfast
 
 local function tick()
     --log("tick")
 
     --if IsMounted() then return end
+
+    if dark_addon.targetlasttarget then
+        TargetLastTarget()
+        dark_addon.targetlasttarget = nil
+    end
+
     if not master_toggle:GetChecked() then
         dark_addon.interface.status('Ready...')
         return
+    end
+
+    if cooldowns:GetChecked() then
+        SetMoveSpeed(dark_addon.speed)
+        isfast = true
+    else
+        if isfast then
+            SetMoveSpeed(7.0)
+            isfast = false
+        end
     end
 
     if SetLastHardwareAction then SetLastHardwareAction(0) end
@@ -25,7 +42,7 @@ local function tick()
 
         -- extra cooldown tracking
         if CastingSpellID() == 0 and dark_addon.cdkey ~= nil then
-            local cdend = GetTime() + 0.5
+            local cdend = GetTime() + 0.4
             log("ECD spell cast finish. set cd of", dark_addon.cdkey, "to", cdend)
             dark_addon.cooldowns[dark_addon.cdkey] = cdend
             dark_addon.cdkey = nil

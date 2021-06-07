@@ -4,19 +4,19 @@ local AutoAttackEnabled = false
 
 function _CastSpellByName(spell, target)
     local targetname = "target"
-    if target then
+
+    if target and UnitExists("target") and not UnitIsUnit("target", target) then
+        dark_addon.targetlasttarget = true
+    end
+    if target and UnitExists(target) then
         targetname = UnitName(target)
     end
     if target then
-        log("will target", target, "for spell", spell)
         TargetUnit(target)
     end
     dark_addon.cdkey = UnitGUID("target") .. ":" .. UnitName("target") .. ":" .. spell
     log("ECD start to watch cdkey", dark_addon.cdkey)
     CastSpellByName(spell)
-    if target then
-        TargetLastTarget()
-    end
     dark_addon.console.debug(1, 'cast', 'red', spell .. ' on ' .. targetname)
     dark_addon.interface.status(spell)
 end
@@ -79,11 +79,11 @@ function dark_addon.environment.hooks.cast(spell, target)
     if type(target) == 'table' then target = target.unitID end
     if type(spell) == 'table' then spell = spell.namerank end
     if type(spell) == 'number' then spell = GetSpellName(spell) end
-    if target ~= nil and not UnitCanAttack('player', target) and enablehcd and UnitName(target) ~= nil then
-        dark_addon.savedHealTarget = target
-        if tonumber(spell) then spell, _ = GetSpellInfo(spell) end
-        dark_addon.console.debug(1, 'engine', 'engine', string.format('casting spell %s on %s. UnitHealth %d', spell, UnitName(target), UnitHealth(target)))
-    end
+    --if target ~= nil and not UnitCanAttack('player', target) and enablehcd and UnitName(target) ~= nil then
+    --    dark_addon.savedHealTarget = target
+    --    if tonumber(spell) then spell, _ = GetSpellInfo(spell) end
+    --    dark_addon.console.debug(1, 'engine', 'engine', string.format('casting spell %s on %s. UnitHealth %d', spell, UnitName(target), UnitHealth(target)))
+    --end
     if  (turbo or CastingSpellID() == 0) then
         if target == 'ground' then
             if tonumber(spell) then

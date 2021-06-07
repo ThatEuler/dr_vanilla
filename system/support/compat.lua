@@ -38,6 +38,15 @@ function log(...)
 end
 dark_addon.log = log
 
+function chat(...)
+    msg = tostring(arg[1])
+    for i = 2, arg.n do
+        msg = msg .. " " .. tostring(arg[i])
+    end
+    DEFAULT_CHAT_FRAME:AddMessage(msg)
+end
+dark_addon.chat = chat
+
 function string.ends_with(str, ending)
     return ending == "" or string.sub(str, -string.len(ending)) == ending
 end

@@ -52,7 +52,7 @@
             </CheckButton>
             <CheckButton name="cooldowns" inherits="ActionButtonTemplate">
                 <Anchors><Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="master_toggle"><Offset><AbsDimension x="4" y="0"/></Offset></Anchor></Anchors>
-                <Layers><Layer level="ARTWORK"><FontString name="cooldowns_text" inherits="GameFontNormalSmall" text="CD"><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors></FontString></Layer></Layers>
+                <Layers><Layer level="ARTWORK"><FontString name="cooldowns_text" inherits="GameFontNormalSmall" text="Fast"><Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors></FontString></Layer></Layers>
             </CheckButton>
             <CheckButton name="interrupts" inherits="ActionButtonTemplate">
                 <Anchors><Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="cooldowns"><Offset><AbsDimension x="4" y="0"/></Offset></Anchor></Anchors>

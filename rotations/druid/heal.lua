@@ -1,8 +1,10 @@
 local D = dark_addon.druid
 
+local CurseCD = 0
 
 local function heal()
-    if not healing_toggle:GetChecked() then return end
+    if not healing_toggle:GetChecked() then return false end
+    if player.buff("Cat Form").up or player.buff("Bear Form").up then return false end
 
     local spells = {}
     local back2bear = false
@@ -63,6 +65,17 @@ local function heal()
         return true
     end
 --]]
+
+
+    local dispellable_unit
+    dispellable_unit = player.removable("curse")
+    if dispellable_unit and castable("Remove Curse") and IsSpellInRange("Remove Curse", dispellable_unit.unitID) == 1 and (GetTime() > CurseCD) then
+        print('Cure Poison on ', dispellable_unit.name)
+        cast("Remove Curse", dispellable_unit)
+        CurseCD = GetTime() + 0.5
+        return true
+    end
+
 end
 dark_addon.environment.hook(heal)
 D.heal = heal
@@ -118,13 +131,23 @@ dark_addon.environment.hook(should_regrowth)
 
 local function group_heal()
     if not healing_toggle:GetChecked() then return end
+    if player.buff("Cat Form").up or player.buff("Bear Form").up then return false end
     if group.num < 2 then return end
     --log("group_heal", "lowest is:", lowest.name, "combat?", group.combat)
 
     if do_hot("Rejuvenation", should_rejuv) then return true end
     if do_hot("Regrowth", should_regrowth) then return true end
-    if lowest.health.percent < 50 then
+    if lowest and lowest.health.percent < 50 and lowest.castable("Healing Touch") then
         cast("Healing Touch", lowest)
+        return true
+    end
+
+    local dispellable_unit
+    dispellable_unit = group.removable("curse")
+    if dispellable_unit and castable("Remove Curse") and IsSpellInRange("Remove Curse", dispellable_unit.unitID) == 1 and (GetTime() > PoisonCD) then
+        print('Cure Poison on ', dispellable_unit.name)
+        cast("Remove Curse", dispellable_unit)
+        PoisonCD = GetTime() + 0.5
         return true
     end
 end

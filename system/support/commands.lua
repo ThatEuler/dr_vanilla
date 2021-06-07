@@ -155,20 +155,76 @@ dark_addon.on_ready(function()
     })
 
     dark_addon.commands.register({
-        command = 'tele',
+        command = 'tp',
         arguments = { 'location' },
         text = 'Teleport to location',
         callback = function(location)
-            local loc = dark_addon.locations[location]
-            log(loc.x, loc.y, loc.z)
-            if not loc or not loc.x then
-                dark_addon.error("Unknown location: ", location)
+            if location == "corpse" then
+                local x, y, z = GetCorpsePosition()
+                SetPosition(x, y, z)
             else
-                SetPosition(loc.x, loc.y, loc.z)
+                local p = dark_addon.locations[location]
+                if not p then
+                    dark_addon.error("Unknown location: ", location)
+                else
+                    SetPosition(p[1], p[2], p[3])
+                end
             end
             return true
         end
     })
+
+    dark_addon.commands.register({
+        command = 'herb',
+        arguments = { },
+        text = 'TP to closest herb',
+        callback = function()
+            local guids = GetGameObjects()
+            local dist = 9999
+            local hx, hy, hz
+            local px, py, pz = UnitPosition("player")
+            for ix, guid in guids do
+                log("GameObject", ix, UnitName(guid))
+                local name = UnitName(guid)
+                if name == "Silverleaf" or name == "Peacebloom" or name == "Earthroot" or name == "Mageroyal" or name == "Briarthorn" or name == "Bruiseweed" then
+                    local x, y, z = GOPosition(guid)
+                    local d = math.sqrt(((px-x)*(px-x))+((py-y)*(py-y))+((pz-z)*(pz-z)))
+                    if d < dist then
+                        dist = d
+                        hx = x; hy = y; hz = z
+                    end
+                end
+            end
+            if hx then
+                SetPosition(hx, hy, hz+0.2)
+            else
+                chat("no herb")
+            end
+            return true
+        end
+    })
+
+    if dark_addon.settings.fetch("speed") then
+        dark_addon.speed = dark_addon.settings.fetch("speed")
+    else
+        dark_addon.speed = 14.0
+    end
+    dark_addon.commands.register({
+        command = 'speed',
+        arguments = { speed },
+        text = 'Set move speed',
+        callback = function(speed)
+            if speed then
+                dark_addon.settings.store("speed", speed)
+                dark_addon.speed = speed
+            else
+                dark_addon.settings.store("speed", 7.0)
+                dark_addon.speed = 7.0
+            end
+            return true
+        end
+    })
+
 end)
 
 SLASH_DARKROTATIONS1, SLASH_DARKROTATIONS2 = '/dark', '/dr'

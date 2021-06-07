@@ -13,6 +13,7 @@ system\support\commands.lua
 system\support\fishing.lua
 system\support\data\icons.lua
 system\support\data\locations.lua
+system\support\data\curse.lua
 
 system\interface\interface.lua
 system\interface\buttons.lua
@@ -31,6 +32,7 @@ system\environment\power.lua
 system\environment\spell.lua
 system\environment\group.lua
 system\environment\enemies.lua
+system\environment\players.lua
 system\environment\unit.lua
 system\environment\sequence.lua
 
@@ -38,8 +40,10 @@ system\rotation\rotation.lua
 system\rotation\timer.lua
 system\interface\draw.lua
 
-rotations\druid\feral.lua
+rotations\druid\druid.lua
 rotations\druid\heal.lua
+rotations\druid\bear.lua
+rotations\druid\cat.lua
 
 system\support\ready.lua
 

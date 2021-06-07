@@ -10,7 +10,7 @@ local function GroupType()
 end
 
 function dark_addon.environment.virtual.validate(virtualID)
-    if dark_addon.environment.virtual.targets[virtualID] or virtualID == 'group' then
+    if dark_addon.environment.virtual.targets[virtualID] or virtualID == 'group' or virtualID == 'players' then
         return true
     end
     return false
@@ -19,6 +19,8 @@ end
 function dark_addon.environment.virtual.resolve(virtualID)
     if virtualID == 'group' then
         return 'group', 'group'
+    elseif virtualID == 'players' then
+        return 'players', 'players'
     else
         return dark_addon.environment.virtual.resolved[virtualID], 'unit'
     end
@@ -35,7 +37,7 @@ end
 function dark_addon.environment.virtual.resolvers.unit(unitA, unitB)
     local healthA = UnitHealth(unitA) / UnitHealthMax(unitA) * 100
     local healthB = UnitHealth(unitB) / UnitHealthMax(unitB) * 100
-    log("compare", unitA, unitB, "health", healthA, healthB)
+    --log("compare", unitA, unitB, "health", healthA, healthB)
     if healthA < healthB then
         return unitA, healthA
     else

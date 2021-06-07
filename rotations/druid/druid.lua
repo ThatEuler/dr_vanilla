@@ -6,12 +6,15 @@ local function buffs()
     local spells = {}
     local back2bear = false
 
+    if player.buff("Cat Form").up or player.buff("Bear Form").up then return false end
+
     --if player.combat and -buff("Enrage") and player.buff("Bear Form").up and target.health.percent > 95 then
     --    cast("Enrage", player)
     --    return true
     --end
 
     --TODO: check that enough mana for all spells before committing.
+    --[[
     if -buff("Mark of the Wild") or -buff("Thorns") and player.power.mana.percent >= 25 then
         if player.buff("Bear Form").up then
             back2bear = true
@@ -28,6 +31,17 @@ local function buffs()
         end
         startsequence({spells = spells})
         return true
+    end
+    --]]
+    if castable("Mark of the Wild") and player.buff("Cat Form").down then
+        local u = group.match(function (u) if u.exists and u.alive and u.buff("Mark of the Wild").down and u.castable("Mark of the Wild") then return u end end)
+        if u then cast("Mark of the Wild", u); return true end
+        local p = players.match(function (p) if p.exists and p.alive and p.buff("Mark of the Wild").down and p.castable("Mark of the Wild") then return p end end)
+        if p then cast("Mark of the Wild", p); return true end
+    end
+    if castable("Thorns") and player.buff("Cat Form").down then
+        local u = group.match(function (u) if u.exists and u.alive and u.buff("Thorns").down and u.castable("Thorns") then return u end end)
+        if u then cast("Thorns", u); return true end
     end
 end
 dark_addon.environment.hook(buffs)
@@ -57,6 +71,7 @@ local function combat_balance()
 end
 dark_addon.environment.hook(combat_balance)
 
+
 local function combat_bear()
     if player.castable("Enrage") and target.health.percent >= 95 then
         cast("Enrage")
@@ -76,35 +91,64 @@ local function combat_bear()
 end
 dark_addon.environment.hook(combat_bear)
 
+local function do_dots()
+    local cand
+    if player.buff("Cat Form").up or player.buff("Bear Form").up then return end
+    --if castable("Moonfire") then
+    --    cand = enemies.match(function (e)
+    --        if e.time_to_die > 3 and e.combat and e.castable("Moonfire") and e.debuff("Moonfire").down then return e; end
+    --    end)
+    --    if cand then chat("moonfire on ".. cand.name); cast("Moonfire", cand); return true end
+    --end
+    if castable("Faerie Fire") then
+        cand = enemies.match(function (e)
+            if e.time_to_die > 3 and e.combat and e.castable("Faerie Fire") and e.debuff("Faerie Fire").down then return e; end
+        end)
+        if cand then cast("Faerie Fire", cand); return true end
+    end
+end
+dark_addon.environment.hook(do_dots)
+
 
 local function combat()
+    if player.sitting then return false end
     if D.heal and D.heal() then return end
     if D.group_heal and D.group_heal() then return end
     if buffs() then return end
     if not target.exists or not target.enemy or not target.alive then return end
-    if not damage_toggle:GetChecked() then return end
     auto_attack()
+    if do_dots() then return end
+    if not damage_toggle:GetChecked() then return end
     if player.buff('Bear Form').up then
         return combat_bear()
+    elseif player.buff('Cat Form').up then
+        return D.combat_cat()
     else
         return combat_balance()
     end
 end
 
+local last_players = 0
+
 local function resting()
     if player.dead then return end
+    local pc = players.count(function() return true end)
+    if pc ~= last_players then
+        chat("players changed to ", pc)
+        last_players = pc
+    end
+    if player.sitting then return false end
     if D.heal and D.heal() then return end
     if D.group_heal and D.group_heal() then return end
     if buffs() then return end
 
     --if player.buff("Barkskin").down and -spell("Barkskin") == 0 then return cast("Barkskin") end
 
-    if player.buff('Bear Form').down then
-        if target.exists and target.enemy and target.alive and target.castable("Moonfire") then
-            log("opener: moonfire")
-            return cast("Moonfire")
+    if player.buff('Bear Form').down and player.buff('Cat Form').down then
+        if target.exists and target.enemy and target.alive and target.castable("Faerie Fire") then
+            return cast("Faerie Fire")
         end
-    else
+    elseif player.buff('Bear Form').up then
         if target.exists and target.enemy and target.alive and target.distance < 5 then
             auto_attack()
             if group.num > 1 then
@@ -120,7 +164,6 @@ local function resting()
             end
         end
     end
-
 end
 
 dark_addon.rotation.register({
